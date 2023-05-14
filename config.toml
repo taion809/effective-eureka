@@ -1,0 +1,4 @@
+baseURL = 'https://moonltg.com/'
+languageCode = 'en-us'
+title = 'Indie Hacking with Nicholas'
+theme = "PaperMod"
