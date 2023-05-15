@@ -3,6 +3,7 @@ languageCode = 'en-us'
 title = 'Indie Hacking with Nicholas'
 theme = "PaperMod"
 copyright = "Copyright (c) 2013 - 2023, moonltg.com; All Rights Reserved."
+googleAnalytics = "G-QRJ5K4TT6V"
 
 [author]
     name = "Nicholas"
