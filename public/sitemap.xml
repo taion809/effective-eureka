@@ -2,10 +2,67 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://moonltg.com/posts/basic-sqlx-relation-scanning/</loc>
+    <lastmod>2015-12-07T09:00:43-05:00</lastmod>
+  </url><url>
     <loc>https://moonltg.com/categories/</loc>
+    <lastmod>2015-12-07T09:00:43-05:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/categories/development/</loc>
+    <lastmod>2015-12-07T09:00:43-05:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/golang/</loc>
+    <lastmod>2015-12-07T09:00:43-05:00</lastmod>
   </url><url>
     <loc>https://moonltg.com/</loc>
+    <lastmod>2015-12-07T09:00:43-05:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/posts/</loc>
+    <lastmod>2015-12-07T09:00:43-05:00</lastmod>
   </url><url>
     <loc>https://moonltg.com/tags/</loc>
+    <lastmod>2015-12-07T09:00:43-05:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/posts/install-php7/</loc>
+    <lastmod>2015-12-06T14:24:50-05:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/php/</loc>
+    <lastmod>2015-12-06T14:24:50-05:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/doctrine/</loc>
+    <lastmod>2014-11-27T13:57:00+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/postgresql/</loc>
+    <lastmod>2014-11-27T13:57:00+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/posts/prepare-int-select-statement/</loc>
+    <lastmod>2014-11-27T13:57:00+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/posts/getting-started-gorilla-mux/</loc>
+    <lastmod>2014-04-19T16:05:12+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/http/</loc>
+    <lastmod>2014-04-19T16:05:12+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/docker/</loc>
+    <lastmod>2013-11-09T01:31:43+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/posts/docker-containing-madness/</loc>
+    <lastmod>2013-11-09T01:31:43+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/mysql/</loc>
+    <lastmod>2013-09-21T10:27:15+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/posts/splitting-mysql-dumps/</loc>
+    <lastmod>2013-09-21T10:27:15+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/git/</loc>
+    <lastmod>2013-08-20T13:23:00+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/tags/jenkins/</loc>
+    <lastmod>2013-08-20T13:23:00+00:00</lastmod>
+  </url><url>
+    <loc>https://moonltg.com/posts/jenkins-ci-deployment-with-bitbucket/</loc>
+    <lastmod>2013-08-20T13:23:00+00:00</lastmod>
   </url>
 </urlset>

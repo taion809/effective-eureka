@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>postgresql on Indie Hacking with Nicholas</title>
+    <link>https://moonltg.com/tags/postgresql/</link>
+    <description>Recent content in postgresql on Indie Hacking with Nicholas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2013 - 2023, moonltg.com; All Rights Reserved.</copyright>
+    <lastBuildDate>Thu, 27 Nov 2014 13:57:00 +0000</lastBuildDate><atom:link href="https://moonltg.com/tags/postgresql/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Preparing Integers With Doctrine</title>
+      <link>https://moonltg.com/posts/prepare-int-select-statement/</link>
+      <pubDate>Thu, 27 Nov 2014 13:57:00 +0000</pubDate>
+      
+      <guid>https://moonltg.com/posts/prepare-int-select-statement/</guid>
+      <description>How do you add integers as prepared statements to a select?</description>
+    </item>
+    
+  </channel>
+</rss>

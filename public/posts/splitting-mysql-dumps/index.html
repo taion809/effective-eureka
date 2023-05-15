@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Splitting Mysql Dumps | Indie Hacking with Nicholas</title>
+<meta name="keywords" content="mysql">
+<meta name="description" content="Setting up Jenkins and Bitbucket for fun and adventure.">
+<meta name="author" content="">
+<link rel="canonical" href="https://moonltg.com/posts/splitting-mysql-dumps/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://moonltg.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://moonltg.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://moonltg.com/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://moonltg.com/apple-touch-icon.png">
+<link rel="mask-icon" href="https://moonltg.com/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Splitting Mysql Dumps" />
+<meta property="og:description" content="Setting up Jenkins and Bitbucket for fun and adventure." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://moonltg.com/posts/splitting-mysql-dumps/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2013-09-21T10:27:15+00:00" />
+<meta property="article:modified_time" content="2013-09-21T10:27:15+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Splitting Mysql Dumps"/>
+<meta name="twitter:description" content="Setting up Jenkins and Bitbucket for fun and adventure."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://moonltg.com/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Splitting Mysql Dumps",
+      "item": "https://moonltg.com/posts/splitting-mysql-dumps/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Splitting Mysql Dumps",
+  "name": "Splitting Mysql Dumps",
+  "description": "Setting up Jenkins and Bitbucket for fun and adventure.",
+  "keywords": [
+    "mysql"
+  ],
+  "articleBody": "The version of phpMyAdmin on Rackspace Cloud Sites has a hard limit of 16Mb for imported SQL. I recently had to migrate a database that was over 500Mb.\nThe solution was simple but tedious, export the database schema first and import it in phpMyAdmin then separate the data into many separate files below 16Mb.\nI came up with a lot of ridiculous solutions using python, perl, combinations of science and voodoo until I realized the solution already existed, Linux. Utilizing the split and sed we can split the database dump into many small parts.\nSplit In order to split the file effectively it will take a little experimentation (this is really fast though so it shouldn’t take long to figure out).\nsplit -l 40000 big_giant_db.dump Will split a file into individual files with 40,000 lines each. Splitting this way will yield files of varying sizes and depending on the data you may still have files over 16Mb which will need to be dealt with in the same way (kind of like recursion, no?).\nProcessing I needed to disable foreign key constraints and wrap each file in a transaction but editing 90 individual files is a pain in the butt, so let’s skip that and do it with sed!\nThe following command will build a list of files starting with ‘x’, which is the output from split, and run sed against them to place text in the beginning of the file.\nfind ./x* -type f -print0 | while IFS= read -r -d '' filename;\\ do sed -i '1s/^/\\n\\nSET FOREIGN_KEY_CHECKS=0;\\nSET SQL_MODE = \\\"NO_AUTO_VALUE_ON_ZERO\\\";\\nSET AUTOCOMMIT = 0;\\nSET time_zone = \\\"+00:00\\\";\\nSTART TRANSACTION;\\n\\n /' $filename;\\ done Holy crap! You thought you had escaped your sed and perl nightmares, didn’t you?\nThe output will look something like this\nSET FOREIGN_KEY_CHECKS=0; SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\"; SET AUTOCOMMIT = 0; SET time_zone = \"+00:00\"; START TRANSACTION; To finish up we need to add the sql commit and re enable foreign key checks, so let’s get to it.\nfind ./x* -type f -print0 | while IFS= read -r -d '' filename;\\ do sed -i '$s/$/\\n\\nCOMMIT;\\nSET FOREIGN_KEY_CHECKS=1;\\n\\n /' $filename;\\ done Like the command before, this will append text to the bottom of each file generated by the find command.\nThe output will look something like this\nCOMMIT; SET FOREIGN_KEY_CHECKS=1; I hope this helped someone else, I apologize for formatting. If you know a better way to do this send me an email, twitter, comment, pull request, or smoke signal.\nUpdate So, had I read the damn Rackspace Cloud Sites KB in the first place I would have known that it is possible to import a database through a shell script\n#!/bin/sh mysql -h host-u user -p'password' db_name \u003c /path/to/backup.sql References My gist Stackoverflow ",
+  "wordCount" : "453",
+  "inLanguage": "en",
+  "datePublished": "2013-09-21T10:27:15Z",
+  "dateModified": "2013-09-21T10:27:15Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://moonltg.com/posts/splitting-mysql-dumps/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Indie Hacking with Nicholas",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://moonltg.com/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://moonltg.com/" accesskey="h" title="Indie Hacking with Nicholas (Alt + H)">Indie Hacking with Nicholas</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Splitting Mysql Dumps
+    </h1>
+    <div class="post-description">
+      Setting up Jenkins and Bitbucket for fun and adventure.
+    </div>
+    <div class="post-meta"><span title='2013-09-21 10:27:15 +0000 UTC'>September 21, 2013</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>The version of phpMyAdmin on Rackspace Cloud Sites has a hard limit of 16Mb for imported SQL. I recently had to migrate a database that was over 500Mb.</p>
+<p>The solution was simple but tedious, export the database schema first and import it in phpMyAdmin then separate the data into many separate files below 16Mb.</p>
+<p>I came up with a lot of ridiculous solutions using python, perl, combinations of science and voodoo until I realized the solution already existed, Linux. Utilizing the split and sed we can split the database dump into many small parts.</p>
+<h4 id="split">Split<a hidden class="anchor" aria-hidden="true" href="#split">#</a></h4>
+<p>In order to split the file effectively it will take a little experimentation (this is really fast though so it shouldn&rsquo;t take long to figure out).</p>
+<pre><code>split -l 40000 big_giant_db.dump
+</code></pre>
+<p>Will split a file into individual files with 40,000 lines each. Splitting this way will yield files of varying sizes and depending on the data you may still have files over 16Mb which will need to be dealt with in the same way (kind of like recursion, no?).</p>
+<h4 id="processing">Processing<a hidden class="anchor" aria-hidden="true" href="#processing">#</a></h4>
+<p>I needed to disable foreign key constraints and wrap each file in a transaction but editing 90 individual files is a pain in the butt, so let&rsquo;s skip that and do it with sed!</p>
+<p>The following command will build a list of files starting with &lsquo;x&rsquo;, which is the output from split, and run sed against them to place text in the beginning of the file.</p>
+<pre><code>find ./x* -type f -print0 | while IFS= read -r -d '' filename;\
+do sed -i '1s/^/\n\nSET FOREIGN_KEY_CHECKS=0;\nSET SQL_MODE = \&quot;NO_AUTO_VALUE_ON_ZERO\&quot;;\nSET AUTOCOMMIT = 0;\nSET time_zone = \&quot;+00:00\&quot;;\nSTART TRANSACTION;\n\n /' $filename;\
+done
+</code></pre>
+<p>Holy crap! You thought you had escaped your sed and perl nightmares, didn&rsquo;t you?</p>
+<p>The output will look something like this</p>
+<pre><code>SET FOREIGN_KEY_CHECKS=0;
+SET SQL_MODE = &quot;NO_AUTO_VALUE_ON_ZERO&quot;;
+SET AUTOCOMMIT = 0;
+SET time_zone = &quot;+00:00&quot;;
+START TRANSACTION;
+</code></pre>
+<p>To finish up we need to add the sql commit and re enable foreign key checks, so let&rsquo;s get to it.</p>
+<pre><code>find ./x* -type f -print0 | while IFS= read -r -d '' filename;\
+do sed -i '$s/$/\n\nCOMMIT;\nSET FOREIGN_KEY_CHECKS=1;\n\n /' $filename;\
+done
+</code></pre>
+<p>Like the command before, this will append text to the bottom of each file generated by the find command.</p>
+<p>The output will look something like this</p>
+<pre><code>COMMIT;
+SET FOREIGN_KEY_CHECKS=1;
+</code></pre>
+<p>I hope this helped someone else, I apologize for formatting. If you know a better way to do this send me an email, twitter, comment, pull request, or smoke signal.</p>
+<h4 id="update">Update<a hidden class="anchor" aria-hidden="true" href="#update">#</a></h4>
+<p>So, had I read the damn Rackspace Cloud Sites KB in the first place I would have known that it is possible to import a database through a shell script</p>
+<pre><code>#!/bin/sh
+mysql -h host-u user -p'password' db_name &lt; /path/to/backup.sql
+</code></pre>
+<h4 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h4>
+<ol>
+<li><a href="https://gist.github.com/taion809/6603818">My gist</a></li>
+<li><a href="http://stackoverflow.com/questions/132902/how-do-i-split-the-output-from-mysqldump-into-smaller-files">Stackoverflow</a></li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://moonltg.com/tags/mysql/">mysql</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>Copyright (c) 2013 - 2023, moonltg.com; All Rights Reserved.</span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

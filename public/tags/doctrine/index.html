@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head>
-	<meta name="generator" content="Hugo 0.111.3"><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Indie Hacking with Nicholas</title>
-
+<title>doctrine | Indie Hacking with Nicholas</title>
+<meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="https://moonltg.com/">
+<link rel="canonical" href="https://moonltg.com/tags/doctrine/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://moonltg.com/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://moonltg.com/favicon-16x16.png">
@@ -19,7 +18,7 @@
 <link rel="mask-icon" href="https://moonltg.com/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://moonltg.com/index.xml">
+<link rel="alternate" type="application/rss+xml" href="https://moonltg.com/tags/doctrine/index.xml">
 <noscript>
     <style>
         #theme-toggle,
@@ -56,28 +55,15 @@
         }
 
     </style>
-</noscript><meta property="og:title" content="Indie Hacking with Nicholas" />
+</noscript><meta property="og:title" content="doctrine" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://moonltg.com/" />
+<meta property="og:url" content="https://moonltg.com/tags/doctrine/" />
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Indie Hacking with Nicholas"/>
+<meta name="twitter:title" content="doctrine"/>
 <meta name="twitter:description" content=""/>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Indie Hacking with Nicholas",
-  "url": "https://moonltg.com/",
-  "description": "",
-  "thumbnailUrl": "https://moonltg.com/favicon.ico",
-  "sameAs": [
-      
-  ]
-}
-</script>
 </head>
 
 <body class="list" id="top">
@@ -124,35 +110,13 @@
     </nav>
 </header>
 <main class="main"> 
+<header class="page-header">
+  <h1>
+    doctrine
+  </h1>
+</header>
 
-<article class="first-entry"> 
-  <header class="entry-header">
-    <h2>basic sqlx relation scanning
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Very quick, I wanted to use Get with a query that contained other tables. The documentation does not have a lot of examples so here we go.
-Given the following database schema
-CREATE EXTENSION pgcrypto; CREATE TABLE content_types ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, deleted_at TIMESTAMP DEFAULT NULL ); CREATE TABLE content ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), content_type_id UUID REFERENCES content_types(id) ON DELETE CASCADE ON UPDATE CASCADE, content TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, deleted_at TIMESTAMP DEFAULT NULL ) I want to query and return a content row with its content_type, here is the struct I want to return....</p>
-  </div>
-  <footer class="entry-footer"><span title='2015-12-07 09:00:43 -0500 EST'>December 7, 2015</span></footer>
-  <a class="entry-link" aria-label="post link to basic sqlx relation scanning" href="https://moonltg.com/posts/basic-sqlx-relation-scanning/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Install PHP7
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>PHP7 was released this month, exciting! So how do you get ahold of it?
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2015-12-06 14:24:50 -0500 EST'>December 6, 2015</span></footer>
-  <a class="entry-link" aria-label="post link to Install PHP7" href="https://moonltg.com/posts/install-php7/"></a>
-</article>
-
-<article class="post-entry"> 
+<article class="post-entry tag-entry"> 
   <header class="entry-header">
     <h2>Preparing Integers With Doctrine
     </h2>
@@ -163,58 +127,6 @@ CREATE EXTENSION pgcrypto; CREATE TABLE content_types ( id UUID PRIMARY KEY DEFA
   </div>
   <footer class="entry-footer"><span title='2014-11-27 13:57:00 +0000 UTC'>November 27, 2014</span></footer>
   <a class="entry-link" aria-label="post link to Preparing Integers With Doctrine" href="https://moonltg.com/posts/prepare-int-select-statement/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Getting Started with Gorilla MUX
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>This is going to be short and sweet. I have been looking at getting into Go for awhile but lacked incentive. That has, as of a week ago, changed and it’s full speed ahead.
-For this I will be using Gorilla MUX. If you haven’t taken a look at the Gorilla toolkit yet I highly recommend it. I really enjoy using it, the use as individual components really resonates with me and my style of coding....</p>
-  </div>
-  <footer class="entry-footer"><span title='2014-04-19 16:05:12 +0000 UTC'>April 19, 2014</span></footer>
-  <a class="entry-link" aria-label="post link to Getting Started with Gorilla MUX" href="https://moonltg.com/posts/getting-started-gorilla-mux/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Docker: Containing Madness
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Recently we had one of our important clients come to us with a node.js application they needed updated. I’m not sure of the circumstances surrounding this application but it looked and felt like a ball of spaghetti was thrown in my face. I punted the modifications to another developer in favor of doing the deployment with docker and supervisord.
-The Problem This node.js application has many assumptions about libraries and file locations that make me cringe, for example it simply won’t work unless packages are installed globally and locally....</p>
-  </div>
-  <footer class="entry-footer"><span title='2013-11-09 01:31:43 +0000 UTC'>November 9, 2013</span></footer>
-  <a class="entry-link" aria-label="post link to Docker: Containing Madness" href="https://moonltg.com/posts/docker-containing-madness/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Splitting Mysql Dumps
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>The version of phpMyAdmin on Rackspace Cloud Sites has a hard limit of 16Mb for imported SQL. I recently had to migrate a database that was over 500Mb.
-The solution was simple but tedious, export the database schema first and import it in phpMyAdmin then separate the data into many separate files below 16Mb.
-I came up with a lot of ridiculous solutions using python, perl, combinations of science and voodoo until I realized the solution already existed, Linux....</p>
-  </div>
-  <footer class="entry-footer"><span title='2013-09-21 10:27:15 +0000 UTC'>September 21, 2013</span></footer>
-  <a class="entry-link" aria-label="post link to Splitting Mysql Dumps" href="https://moonltg.com/posts/splitting-mysql-dumps/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Jenkins CI Deployment with Bitbucket
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>I recently had someone ask me how to get started with Jenkins-CI, git, and ssh. My team is using it now for a CI-git deployment scheme but I was not the one to install or configure it. I didn’t really want to let down my friend with an “I don’t know, google it” answer so I spun up a new EC2 instance on Amazon AWS, installed Jenkins, pushed a new private repo to bitbucket, pulled and deployed that push on my Jenkins test server....</p>
-  </div>
-  <footer class="entry-footer"><span title='2013-08-20 13:23:00 +0000 UTC'>August 20, 2013</span></footer>
-  <a class="entry-link" aria-label="post link to Jenkins CI Deployment with Bitbucket" href="https://moonltg.com/posts/jenkins-ci-deployment-with-bitbucket/"></a>
 </article>
     </main>
     

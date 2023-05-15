@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>git on Indie Hacking with Nicholas</title>
+    <link>https://moonltg.com/tags/git/</link>
+    <description>Recent content in git on Indie Hacking with Nicholas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2013 - 2023, moonltg.com; All Rights Reserved.</copyright>
+    <lastBuildDate>Tue, 20 Aug 2013 13:23:00 +0000</lastBuildDate><atom:link href="https://moonltg.com/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Jenkins CI Deployment with Bitbucket</title>
+      <link>https://moonltg.com/posts/jenkins-ci-deployment-with-bitbucket/</link>
+      <pubDate>Tue, 20 Aug 2013 13:23:00 +0000</pubDate>
+      
+      <guid>https://moonltg.com/posts/jenkins-ci-deployment-with-bitbucket/</guid>
+      <description>Setting up Jenkins and Bitbucket for fun and adventure.</description>
+    </item>
+    
+  </channel>
+</rss>

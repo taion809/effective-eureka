@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Docker: Containing Madness | Indie Hacking with Nicholas</title>
+<meta name="keywords" content="docker">
+<meta name="description" content="Use Docker to containerize crazy legacy software.">
+<meta name="author" content="">
+<link rel="canonical" href="https://moonltg.com/posts/docker-containing-madness/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://moonltg.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://moonltg.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://moonltg.com/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://moonltg.com/apple-touch-icon.png">
+<link rel="mask-icon" href="https://moonltg.com/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Docker: Containing Madness" />
+<meta property="og:description" content="Use Docker to containerize crazy legacy software." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://moonltg.com/posts/docker-containing-madness/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2013-11-09T01:31:43+00:00" />
+<meta property="article:modified_time" content="2013-11-09T01:31:43+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker: Containing Madness"/>
+<meta name="twitter:description" content="Use Docker to containerize crazy legacy software."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://moonltg.com/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Docker: Containing Madness",
+      "item": "https://moonltg.com/posts/docker-containing-madness/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Docker: Containing Madness",
+  "name": "Docker: Containing Madness",
+  "description": "Use Docker to containerize crazy legacy software.",
+  "keywords": [
+    "docker"
+  ],
+  "articleBody": "Recently we had one of our important clients come to us with a node.js application they needed updated. I’m not sure of the circumstances surrounding this application but it looked and felt like a ball of spaghetti was thrown in my face. I punted the modifications to another developer in favor of doing the deployment with docker and supervisord.\nThe Problem This node.js application has many assumptions about libraries and file locations that make me cringe, for example it simply won’t work unless packages are installed globally and locally.\nThe Solution Build a docker image containing the application so that it could be deployed without touching anything outside of its container, think like a chroot.\nLet’s Do It! The application we will be using can be found in my github repository.\nThe following Dockerfile will be used to build our image. We are using Dockerfiles because it makes building images simple, versioned, and easily distributable.\nOur Dockerfile {% gist 7380804 Dockerfile %}\nIn order to build our image from this Dockerfile we will execute the following command.\nsudo docker build -t='johnsn/webapp' . You should see output like the following\n# Excerpt Step 14 : ENTRYPOINT [\"/usr/bin/nodejs\"] ---\u003e Running in 0db9a210f33c ---\u003e a82cdefae38d Step 15 : CMD [\"server.js\"] ---\u003e Running in c11ec2908881 ---\u003e 439913416e8f Successfully built 439913416e8f You can now make the choice to push your image to the docker.io registry, a private registry, or not push at all. If you chose to push it to a registry you will need to use the docker push command.\nFrom here use docker run to create and start a container so we can verify the build worked.\nsudo docker run -d -p 5000:80 johnsn/webapp You should receive output like the following, we used the -p flag to map our host port 5000 to the container port 80 which we exposed in the Dockerfile\n# Your container ID will be returned 3f1a9b9ac4e4 Verify with curl\ncurl -v localhost:5000 At this point we have a web application running inside a docker container we can serve on port 5000. But, we have a problem, after a reboot we need to manually run the docker run command to bring up our web app again. Let’s solve that problem with supervisord.\nSupervisord is really simple and convenient which is why I am using it over something like daemontools.\n[program:webapp] command=/usr/bin/docker run -p 5000:80 johnsn/webapp autostart=true autorestart=true Notice we do not use the -d flag, this is because Supervisord will run our container as a daemon.\nNow restart the supervisord service with service or using supervisorctl\n# sudo service supervisor restart does not work :\\ sudo service supervisor stop sudo service supervisor start Verify\nps aux | grep webapp # root 8964 0.0 0.7 186948 3600 ? Sl 03:54 0:00 /usr/bin/docker run -p 5000:80 johnsn/webapp Alright, so let’s setup nginx properly so we can have webapp.com instead of webapp.com:5000\n## HTTP server. server { listen 80; # IPv4 server_name webapp.com; ## Access and error logs. access_log /var/log/nginx/webapp.com_access.log; error_log /var/log/nginx/webapp.com_error.log; location / { proxy_set_header X-Forwarded-Host $host; proxy_set_header X-Forwarded-Server $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_pass http://127.0.0.1:5000; } } # HTTP server Restart the nginx and verify!\ncurl -v webapp.com That is it, 30 minutes later we have an immutable linux container for our web app that we can then deploy to a single server or many servers.\nPlease let me know if you see errors, have corrections, or know a better way.\nReferences Docker Supervisord ",
+  "wordCount" : "573",
+  "inLanguage": "en",
+  "datePublished": "2013-11-09T01:31:43Z",
+  "dateModified": "2013-11-09T01:31:43Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://moonltg.com/posts/docker-containing-madness/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Indie Hacking with Nicholas",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://moonltg.com/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://moonltg.com/" accesskey="h" title="Indie Hacking with Nicholas (Alt + H)">Indie Hacking with Nicholas</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Docker: Containing Madness
+    </h1>
+    <div class="post-description">
+      Use Docker to containerize crazy legacy software.
+    </div>
+    <div class="post-meta"><span title='2013-11-09 01:31:43 +0000 UTC'>November 9, 2013</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>Recently we had one of our important clients come to us with a node.js application they needed updated.  I&rsquo;m not sure of the circumstances surrounding this application but it looked and felt like a ball of spaghetti was thrown in my face.  I punted the modifications to another developer in favor of doing the deployment with docker and supervisord.</p>
+<h3 id="the-problem">The Problem<a hidden class="anchor" aria-hidden="true" href="#the-problem">#</a></h3>
+<p>This node.js application has many assumptions about libraries and file locations that make me cringe, for example it simply won&rsquo;t work unless packages are installed globally <strong>and</strong> locally.</p>
+<h3 id="the-solution">The Solution<a hidden class="anchor" aria-hidden="true" href="#the-solution">#</a></h3>
+<p>Build a docker image containing the application so that it could be deployed without touching anything outside of its container, think like a chroot.</p>
+<h3 id="lets-do-it">Let&rsquo;s Do It!<a hidden class="anchor" aria-hidden="true" href="#lets-do-it">#</a></h3>
+<p>The application we will be using can be found in my <a href="https://github.com/taion809/hello-node">github repository</a>.</p>
+<p>The following Dockerfile will be used to build our image.  We are using Dockerfiles because it  makes building images simple, versioned, and easily distributable.</p>
+<p>Our Dockerfile
+{% gist 7380804 Dockerfile %}</p>
+<p>In order to build our image from this Dockerfile we will execute the following command.</p>
+<pre><code>sudo docker build -t='johnsn/webapp' . 
+</code></pre>
+<p>You should see output like the following</p>
+<pre><code># Excerpt
+Step 14 : ENTRYPOINT [&quot;/usr/bin/nodejs&quot;]
+ ---&gt; Running in 0db9a210f33c
+ ---&gt; a82cdefae38d
+Step 15 : CMD [&quot;server.js&quot;]
+ ---&gt; Running in c11ec2908881
+ ---&gt; 439913416e8f
+Successfully built 439913416e8f
+</code></pre>
+<p>You can now make the choice to push your image to the docker.io registry, a private registry, or not push at all.  If you chose to push it to a registry you will need to use the docker push command.</p>
+<p>From here use docker run to create and start a container so we can verify the build worked.</p>
+<pre><code>sudo docker run -d -p 5000:80 johnsn/webapp
+</code></pre>
+<p>You should receive output like the following, we used the -p flag to map our host port 5000 to the container port 80 which we exposed in the Dockerfile</p>
+<pre><code># Your container ID will be returned
+3f1a9b9ac4e4
+</code></pre>
+<p>Verify with curl</p>
+<pre><code>curl -v localhost:5000
+</code></pre>
+<p>At this point we have a web application running inside a docker container we can serve on port 5000.  But, we have a problem, after a reboot we need to manually run the docker run command to bring up our web app again.  Let&rsquo;s solve that problem with supervisord.</p>
+<p>Supervisord is really simple and convenient which is why I am using it over something like daemontools.</p>
+<pre><code>[program:webapp]
+command=/usr/bin/docker run -p 5000:80 johnsn/webapp
+autostart=true
+autorestart=true
+</code></pre>
+<p>Notice we do not use the -d flag, this is because Supervisord will run our container as a daemon.</p>
+<p>Now restart the supervisord service with <code>service</code> or using <code>supervisorctl</code></p>
+<pre><code># sudo service supervisor restart does not work :\
+
+sudo service supervisor stop
+sudo service supervisor start
+</code></pre>
+<p>Verify</p>
+<pre><code>ps aux | grep webapp
+
+# root      8964  0.0  0.7 186948  3600 ?        Sl   03:54   0:00 /usr/bin/docker run -p 5000:80 johnsn/webapp
+</code></pre>
+<!-- raw HTML omitted -->
+<p>Alright, so let&rsquo;s setup nginx properly so we can have webapp.com instead of webapp.com:5000</p>
+<pre><code>## HTTP server.
+server {
+    listen 80; # IPv4
+
+    server_name webapp.com;
+
+    ## Access and error logs.
+    access_log /var/log/nginx/webapp.com_access.log;
+    error_log /var/log/nginx/webapp.com_error.log;
+
+    location / {
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:5000;
+    }
+
+} # HTTP server
+</code></pre>
+<p>Restart the nginx and verify!</p>
+<pre><code>curl -v webapp.com
+</code></pre>
+<p>That is it, 30 minutes later we have an immutable linux container for our web app that we can then deploy to a single server or many servers.</p>
+<p>Please let me know if you see errors, have corrections, or know a better way.</p>
+<h3 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h3>
+<ul>
+<li><a href="http://docker.io">Docker</a></li>
+<li><a href="http://supervisord.org/">Supervisord</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://moonltg.com/tags/docker/">docker</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>Copyright (c) 2013 - 2023, moonltg.com; All Rights Reserved.</span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

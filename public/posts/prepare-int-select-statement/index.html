@@ -5,12 +5,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Categories | Indie Hacking with Nicholas</title>
-<meta name="keywords" content="">
-<meta name="description" content="">
+<title>Preparing Integers With Doctrine | Indie Hacking with Nicholas</title>
+<meta name="keywords" content="doctrine, postgresql">
+<meta name="description" content="How do you add integers as prepared statements to a select?">
 <meta name="author" content="">
-<link rel="canonical" href="https://moonltg.com/categories/">
+<link rel="canonical" href="https://moonltg.com/posts/prepare-int-select-statement/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
 <link rel="icon" href="https://moonltg.com/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://moonltg.com/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://moonltg.com/favicon-32x32.png">
@@ -18,7 +20,6 @@
 <link rel="mask-icon" href="https://moonltg.com/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://moonltg.com/categories/index.xml">
 <noscript>
     <style>
         #theme-toggle,
@@ -55,18 +56,70 @@
         }
 
     </style>
-</noscript><meta property="og:title" content="Categories" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://moonltg.com/categories/" />
+</noscript><meta property="og:title" content="Preparing Integers With Doctrine" />
+<meta property="og:description" content="How do you add integers as prepared statements to a select?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://moonltg.com/posts/prepare-int-select-statement/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2014-11-27T13:57:00+00:00" />
+<meta property="article:modified_time" content="2014-11-27T13:57:00+00:00" />
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Categories"/>
-<meta name="twitter:description" content=""/>
+<meta name="twitter:title" content="Preparing Integers With Doctrine"/>
+<meta name="twitter:description" content="How do you add integers as prepared statements to a select?"/>
 
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://moonltg.com/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Preparing Integers With Doctrine",
+      "item": "https://moonltg.com/posts/prepare-int-select-statement/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Preparing Integers With Doctrine",
+  "name": "Preparing Integers With Doctrine",
+  "description": "How do you add integers as prepared statements to a select?",
+  "keywords": [
+    "doctrine", "postgresql"
+  ],
+  "articleBody": "I recently had an issue with binding an integer to a select statement with doctrine and postgresql.\nGiven the following:\n\u003c?php $sql = 'INSERT INTO tree (ancestor, descendant) SELECT cta.ancestor, :descendant FROM tree AS cta WHERE cta.descendant = :ancestor UNION ALL SELECT :descendant, :descendant'; $statement = $connection-\u003eprepare($sql); $statement-\u003ebindValue(\"descendant\", (int) $rootNode, 'integer'); $statement-\u003ebindValue(\"ancestor\", (int) $ancestor, 'integer'); $statement-\u003eexecute(); ?\u003e I received the following error:\n/** PHP Fatal error: Uncaught exception 'PDOException' with message 'SQLSTATE[42P08]: Ambiguous parameter: 7 ERROR: inconsistent types deduced for parameter $1 LINE 2: SELECT cta.ancestor, $1 ^ DETAIL: integer versus text' in /vagrant_data/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOStatement.php:91 */ The solution was to explicitly cast it as an integer like so ::integer\nAnd here is the revised code:\n\u003c?php $sql = 'INSERT INTO tree (ancestor, descendant) SELECT cta.ancestor, :descendant::integer FROM tree AS cta WHERE cta.descendant = :ancestor UNION ALL SELECT :descendant, :descendant'; $statement = $connection-\u003eprepare($sql); $statement-\u003ebindValue(\"descendant\", (int) $rootNode, 'integer'); $statement-\u003ebindValue(\"ancestor\", (int) $ancestor, 'integer'); $statement-\u003eexecute(); ?\u003e If there are errors or you have a suggestion send me a message @taio.\n",
+  "wordCount" : "165",
+  "inLanguage": "en",
+  "datePublished": "2014-11-27T13:57:00Z",
+  "dateModified": "2014-11-27T13:57:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://moonltg.com/posts/prepare-int-select-statement/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Indie Hacking with Nicholas",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://moonltg.com/favicon.ico"
+    }
+  }
+}
+</script>
 </head>
 
-<body class="list" id="top">
+<body class="" id="top">
 <script>
     if (localStorage.getItem("pref-theme") === "dark") {
         document.body.classList.add('dark');
@@ -110,15 +163,71 @@
     </nav>
 </header>
 <main class="main">
-<header class="page-header">
-    <h1>Categories</h1>
-</header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="https://moonltg.com/categories/development/">Development <sup><strong><sup>7</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Preparing Integers With Doctrine
+    </h1>
+    <div class="post-description">
+      How do you add integers as prepared statements to a select?
+    </div>
+    <div class="post-meta"><span title='2014-11-27 13:57:00 +0000 UTC'>November 27, 2014</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>I recently had an issue with binding an integer to a select statement with doctrine and postgresql.</p>
+<p>Given the following:</p>
+<pre><code>&lt;?php
+    $sql = 'INSERT INTO tree (ancestor, descendant)
+            SELECT cta.ancestor, :descendant
+            FROM tree AS cta
+            WHERE cta.descendant = :ancestor
+            UNION ALL
+            SELECT :descendant, :descendant';
+
+    $statement = $connection-&gt;prepare($sql);
+    $statement-&gt;bindValue(&quot;descendant&quot;, (int) $rootNode, 'integer');
+    $statement-&gt;bindValue(&quot;ancestor&quot;, (int) $ancestor, 'integer');
+    $statement-&gt;execute();
+?&gt;
+</code></pre>
+<p>I received the following error:</p>
+<pre><code>/**
+    PHP Fatal error:  Uncaught exception 'PDOException' with message 'SQLSTATE[42P08]: Ambiguous parameter: 7 ERROR:  inconsistent types deduced for parameter $1
+    LINE 2:                 SELECT cta.ancestor, $1
+                                                          ^
+    DETAIL:  integer versus text' in /vagrant_data/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOStatement.php:91
+*/
+</code></pre>
+<p>The solution was to explicitly cast it as an integer like so ::integer</p>
+<p>And here is the revised code:</p>
+<pre><code>&lt;?php
+    $sql = 'INSERT INTO tree (ancestor, descendant)
+            SELECT cta.ancestor, :descendant::integer
+            FROM tree AS cta
+            WHERE cta.descendant = :ancestor
+            UNION ALL
+            SELECT :descendant, :descendant';
+
+    $statement = $connection-&gt;prepare($sql);
+    $statement-&gt;bindValue(&quot;descendant&quot;, (int) $rootNode, 'integer');
+    $statement-&gt;bindValue(&quot;ancestor&quot;, (int) $ancestor, 'integer');
+    $statement-&gt;execute();
+?&gt;
+</code></pre>
+<p>If there are errors or you have a suggestion send me a message @taio.</p>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://moonltg.com/tags/doctrine/">doctrine</a></li>
+      <li><a href="https://moonltg.com/tags/postgresql/">postgresql</a></li>
+    </ul>
+  </footer>
+</article>
     </main>
     
 <footer class="footer">
