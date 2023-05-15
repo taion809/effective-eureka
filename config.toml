@@ -2,3 +2,18 @@ baseURL = 'https://moonltg.com/'
 languageCode = 'en-us'
 title = 'Indie Hacking with Nicholas'
 theme = "PaperMod"
+copyright = "Copyright (c) 2013 - 2023, moonltg.com; All Rights Reserved."
+
+[author]
+    name = "Nicholas"
+    github = "taion809"
+    gaID = "UA-43022143-1"
+
+[permalinks]
+    # Change the permalink format for the 'post' content type.
+    post = "/blog/:title/"
+
+[indexes]
+    tag = "tags"
+    topic = "topics"
+    category = "categories"
